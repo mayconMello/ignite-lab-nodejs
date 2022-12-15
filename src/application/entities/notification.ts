@@ -1,22 +1,30 @@
 import { Replace } from 'src/helpers/Replace';
 import { Content } from './content';
+import { randomUUID } from 'node:crypto';
 
 interface NotificationProps {
   recipientId: string;
   content: Content;
   category: string;
   readAt?: Date | null;
+  cancelledAt?: Date | null;
   createdAt: Date;
 }
 
 export class Notification {
+  private _id: string;
   private props: NotificationProps;
 
   constructor(props: Replace<NotificationProps, { createdAt?: Date }>) {
+    this._id = randomUUID();
     this.props = {
       ...props,
       createdAt: props.createdAt ?? new Date(),
     };
+  }
+
+  public get id() {
+    return this._id;
   }
 
   public set recipientId(recipientId: string) {
@@ -49,6 +57,14 @@ export class Notification {
 
   public get readAt(): Date | null | undefined {
     return this.props.readAt;
+  }
+
+  public cancel() {
+    this.props.cancelledAt = new Date();
+  }
+
+  public get cancelledAt(): Date | null | undefined {
+    return this.props.cancelledAt;
   }
 
   public get createdAt(): Date {
